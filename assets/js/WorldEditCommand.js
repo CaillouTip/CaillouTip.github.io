@@ -2,6 +2,7 @@ $(function () {
 	//Initialisation de la page
 	var caillouRaceBool = false;
 	var caillouReplaceBool = false;
+	var caillouCyl = true;
 	var command = "";
 	$('.caillouCheckbox,#caillouMessageBox').hide();
 	if ($("#commandReplace").prop('checked')) {
@@ -35,7 +36,12 @@ $(function () {
 				command = command + "//set ";
 				generateMix();
 			} else if ($('#commandBr').prop('checked')) {
-				command = command + "/br cyl ";
+				command = command + "/br ";
+				if (!caillouCyl) {
+					command = command + "sphere ";
+				} else {
+					command = command + "cyl ";
+				}
 				generateMix();
 			} else if ($('#commandReplace').prop('checked')) {
 				command = command + "//replace ";
@@ -95,12 +101,8 @@ $(function () {
 		$('.caillouCheckbox').prop('checked', false);
 		ratesTotalSum();
 	}
-
-	//Appel mise à jour du taux total
-	$('.totalPercent').keyup(ratesTotalSum);
-	
-	//Alterner checkbox et inputs
-	$('input[name="whichCommand"]').change(function() {
+	//Fonction Alterner checkbox et inputs
+	function alternateCheckboxInput() {
 		if ($("#commandReplace").prop('checked')) {
 			$('.caillouCheckbox').show();
 			$('.caillouLimit').hide();
@@ -114,7 +116,13 @@ $(function () {
 			$('#caillouMessageBox').hide();
 			$('#ratesTotal').show();
 		}
-	});
+	}
+
+	//Appel mise à jour du taux total
+	$('.totalPercent').keyup(ratesTotalSum);
+	
+	//Alterner checkbox et inputs
+	$('input[name="whichCommand"]').change(alternateCheckboxInput);
 	//Bouton Copier la commande
 	$('#copyCommand').click(copyToClipboard);
 	//Bouton Générer et copier la commande
@@ -135,5 +143,20 @@ $(function () {
 			$('.caillouSorting').show();
 			caillouRaceBool = false;
 		}
+	});
+	//Cyl ou Sphere
+	$('#cyl').click(function() {
+		$(this).addClass('caillouUnderline');
+		$('#sphere').removeClass('caillouUnderline')
+		caillouCyl = true;
+		$('#commandBr').prop('checked','true');
+		alternateCheckboxInput();
+	});
+	$('#sphere').click(function() {
+		$(this).addClass('caillouUnderline');
+		$('#cyl').removeClass('caillouUnderline')
+		caillouCyl = false;
+		$('#commandBr').prop('checked','true');
+		alternateCheckboxInput();
 	});
 });
